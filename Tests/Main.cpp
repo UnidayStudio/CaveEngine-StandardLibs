@@ -5,14 +5,19 @@
 
 #include "StringTests.h"
 #include "VectorTests.h"
+#include "ListTests.h"
 
 int main(){
-    cave::String testStr;
-
+    // Running the String tests:
     testCaveString();    
 
+    // Running the Vector tests:
     testCaveVector();
     testCaveVectorBehavior();
+
+    // Running the Linked List tests:
+    testCaveList();
+    testCaveListIterator();
 
     return 0;
 }
