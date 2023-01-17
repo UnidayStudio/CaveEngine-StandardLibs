@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "STD/Exception.h"
+
 
 cave::String::String() : m_data(nullptr), m_size(0), m_allocated(0) {}
 cave::String::String(const char* str) : m_data(nullptr), m_size(0), m_allocated(0) {
@@ -151,13 +153,13 @@ const char* cave::String::data() const {
 
 char& cave::String::at(size_t pos) {
     if (pos > m_size || m_data == nullptr){
-        throw OutOfRangeException(pos);
+        throw cave::OutOfRangeException(pos);
     }
     return m_data[pos];
 }
 const char& cave::String::at(size_t pos) const {
     if (pos > m_size || m_data == nullptr){
-        throw OutOfRangeException(pos);
+        throw cave::OutOfRangeException(pos);
     }
     return m_data[pos];
 }

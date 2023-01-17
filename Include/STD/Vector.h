@@ -5,6 +5,8 @@
 #include <utility> // std::move, std::forward
 #include <cstdlib> // malloc, free
 
+#include "STD/Exception.h"
+
 
 namespace cave {
     template <typename T>
@@ -12,12 +14,6 @@ namespace cave {
     public:
         static constexpr size_t npos = -1;
         static constexpr size_t minAllocatedSlots = 64;
-
-        class OutOfRangeException{
-        public:
-            OutOfRangeException(size_t pos=npos) : position(pos){}
-            size_t position;
-        };
 
         Vector() : m_data(nullptr), m_size(0), m_allocated(0) {}
         Vector(const Vector& other) : m_data(nullptr), m_size(0), m_allocated(0) {
@@ -82,13 +78,13 @@ namespace cave {
 
         T& at(size_t pos) {
             if (pos > m_size || m_data == nullptr){
-                throw OutOfRangeException(pos);
+                throw cave::OutOfRangeException(pos);
             }
             return m_data[pos];
         }
         const T& at(size_t pos) const {
             if (pos > m_size || m_data == nullptr){
-                throw OutOfRangeException(pos);
+                throw cave::OutOfRangeException(pos);
             }
             return m_data[pos];
         }

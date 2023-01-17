@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "STD/Vector.h"
+#include "STD/Exception.h"
 
 
 void testCaveVector() {

@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "STD/String.h"
+#include "STD/Exception.h"
 
 
 void testCaveString() {
@@ -69,7 +70,7 @@ void testCaveString() {
     try {
         s6.at(100);
         assert(false);  // out_of_range exception should be thrown
-    } catch (cave::String::OutOfRangeException& e) {
+    } catch (cave::OutOfRangeException& e) {
         assert(true);
     }
 

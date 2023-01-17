@@ -11,12 +11,6 @@ namespace cave {
         static constexpr size_t npos = -1;
         static constexpr size_t bufferSize = 16;
 
-        class OutOfRangeException{
-        public:
-            OutOfRangeException(size_t pos=npos) : position(pos){}
-            size_t position;
-        };
-
         String(); 
         String(const char* str);
         String(const String& other);
