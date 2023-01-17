@@ -1,15 +1,18 @@
 #include <iostream>
 
 #include "STD/String.h"
+#include "STD/Vector.h"
 
 #include "Tests/StringTests.h"
+#include "Tests/VectorTests.h"
 
-
-//int main(int argc, char** argv){
 int main(){
     cave::String testStr;
 
-    testCaveString();
+    testCaveString();    
+
+    testCaveVector();
+    testCaveVectorBehavior();
 
     return 0;
 }
