@@ -11,10 +11,11 @@ I've reached a point in **Cave Engine** where I really need to have a bit more c
 # Project Progress
 I'd like to write my own implementation of the most used `std::` classes in Cave and then move on to also write my own **math** class (to eventually replace the use of `glm`). Here is the current development status:
 
-| **Class (std):** | **Class (cave):** | **Status** |
+| **Class (std):**| **Class (cave):** | **Status** |
 |-----------------|-------------------|------------|
 | `std::string`   | `cave::String`    |  **DONE**  |
 | `std::vector<T>`| `cave::Vector<T>` |  **DONE**  |
+| `std::list<T>`  | `cave::List<T>`   |  **DONE**  |
 | `std::unordered_map<K, V>`   | `cave::UMap<K, V>`    |  *In Progress*  |
 | `std::map<K, V>`   | `cave::Map<K, V>`    |  *TO DO*  |
 
