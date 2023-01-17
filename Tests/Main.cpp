@@ -3,8 +3,8 @@
 #include "STD/String.h"
 #include "STD/Vector.h"
 
-#include "Tests/StringTests.h"
-#include "Tests/VectorTests.h"
+#include "StringTests.h"
+#include "VectorTests.h"
 
 int main(){
     cave::String testStr;
