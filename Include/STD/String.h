@@ -40,7 +40,6 @@ namespace cave {
 
         explicit operator const char*() const { return c_str(); }
 
-        //std::ostream& operator<<(std::ostream& os);
         friend auto operator<<(std::ostream& os, const String& str) -> std::ostream&{
             if (str.m_data){ os << str.c_str(); }
             return os;
