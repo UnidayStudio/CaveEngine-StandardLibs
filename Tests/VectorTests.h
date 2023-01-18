@@ -16,6 +16,17 @@ void testCaveVector() {
     assert(vec.size() == 0);
     assert(vec.capacity() == 0);
 
+    // Test iterating an empty vector
+    try {
+        int count = 0;
+        for (int e : vec){
+            count += e;
+        }
+    } catch (cave::OutOfRangeException e){
+        std::cout << "pos: " << e.pos << "\n";
+        assert(false);
+    }
+
     // test push_back
     for (int i=0; i<3; i++){
         vec.pushBack(i + 1);
@@ -23,6 +34,15 @@ void testCaveVector() {
     assert(vec.size() == 3);
     for (int i=0; i<3; i++){
         assert(vec[i] == i + 1);
+    } 
+    // Test iterating a filled vector:
+    try {
+        int count = 1;
+        for (int e : vec){
+            assert(e == count++);
+        }
+    } catch (cave::OutOfRangeException e){
+        assert(false);
     }
 
     // Test find
@@ -38,7 +58,7 @@ void testCaveVector() {
     assert(vec.at(2) == 3);
 
     // Test the iterators
-    cave::Vector<int>::iterator it = vec.begin();
+    cave::Vector<int>::Iterator it = vec.begin();
     assert(*it == 1); ++it;
     assert(*it == 2); ++it;
     assert(*it == 3); ++it;

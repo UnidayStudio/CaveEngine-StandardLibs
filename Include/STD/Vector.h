@@ -38,21 +38,86 @@ namespace cave {
             }
         }
 
-        using iterator = T*;
-        using const_iterator = const T*;
+        struct Iterator {
+            Iterator(const Iterator& other) : m_owner(other.m_owner), m_current(other.m_current) {}
+            Iterator(Vector* owner, size_t current) : m_owner(owner), m_current(current) {}
 
-        iterator       begin() {
-            return &at(0);
+            T& operator*() {
+                return m_owner->at(m_current);
+            }
+            
+            Iterator& operator++() {
+                m_current++;
+                return *this;
+            }
+            Iterator& operator--() {
+                m_current--;
+                return *this;
+            }
+
+            Iterator operator+(int i) const {
+                Iterator copy(*this);
+                for (int j = 0; j < i; j++) {
+                    copy++;
+                }
+                return copy;
+            }
+            Iterator operator-(int i) const {
+                Iterator copy(*this);
+                for (int j = 0; j < i; j++) {
+                    copy--;
+                }
+                return copy;
+            }
+            Iterator& operator+=(int i) {
+                for (int j = 0; j < i; j++) {
+                    (*this)++;
+                }
+                return *this;
+            }
+
+            Iterator& operator-=(int i) {
+                for (int j = 0; j < i; j++) {
+                    (*this)--;
+                }
+                return *this;
+            }
+
+            Iterator operator++(int) {
+                Iterator copy(*this);
+                ++(*this);
+                return copy;
+            }
+            Iterator operator--(int) {
+                Iterator copy(*this);
+                --(*this);
+                return copy;
+            }
+
+            bool operator==(const Iterator& other) const {
+                return m_owner == other.m_owner && m_current == other.m_current;
+            }
+
+            bool operator!=(const Iterator& other) const {
+                return !(*this == other);
+            }
+        private:
+            Vector* m_owner;
+            size_t m_current;
+        };
+
+        Iterator       begin() {
+            return Iterator(this, 0);
         }
-        const_iterator begin() const {
-            return &at(0);
+        const Iterator begin() const {
+            return Iterator(this, 0);
         }
 
-        iterator       end() {
-            return &at(m_size);
+        Iterator       end() {
+            return Iterator(this, size());
         }
-        const_iterator end()   const {
-            return &at(m_size);
+        const Iterator end()   const {
+            return Iterator(this, size());
         }
 
         T&       front() {
@@ -77,13 +142,13 @@ namespace cave {
         }
 
         T& at(size_t pos) {
-            if (pos > m_size || m_data == nullptr){
+            if (pos >= m_size || m_data == nullptr){
                 throw cave::OutOfRangeException(pos);
             }
             return m_data[pos];
         }
         const T& at(size_t pos) const {
-            if (pos > m_size || m_data == nullptr){
+            if (pos >= m_size || m_data == nullptr){
                 throw cave::OutOfRangeException(pos);
             }
             return m_data[pos];
