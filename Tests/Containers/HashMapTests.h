@@ -4,11 +4,11 @@
 #include <cstring>
 #include <iostream>
 
-#include "STD/String.h"
-#include "STD/StringHash.h"
+#include "Containers/String.h"
+#include "Containers/StringHash.h"
 
-#include "STD/HashMap.h"
-#include "STD/Exception.h"
+#include "Containers/HashMap.h"
+#include "Containers/Exception.h"
 
 
 void testCaveHashMap() {

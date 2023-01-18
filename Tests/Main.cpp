@@ -1,15 +1,10 @@
 #include <iostream>
 
-//#include "STD/String.h"
-//#include "STD/Vector.h"
-//#include "STD/List.h"
-//#include "STD/HashMap.h"
-
-#include "StringTests.h"
-#include "VectorTests.h"
-#include "ListTests.h"
-#include "HashMapTests.h"
-#include "PairTests.h"
+#include "Containers/StringTests.h"
+#include "Containers/VectorTests.h"
+#include "Containers/ListTests.h"
+#include "Containers/HashMapTests.h"
+#include "Containers/PairTests.h"
 
 int main(){
     // Running the String tests:

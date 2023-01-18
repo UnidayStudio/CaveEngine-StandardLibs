@@ -5,9 +5,9 @@
 #include <utility>
 #include <iostream>
 
-#include "STD/Pair.h"
-#include "STD/String.h"
-#include "STD/Exception.h"
+#include "Containers/Pair.h"
+#include "Containers/String.h"
+#include "Containers/Exception.h"
 
 void testCavePair() {
     std::cout << "[PAIR] Running tests...\n";
