@@ -22,8 +22,7 @@ void testCaveVector() {
         for (int e : vec){
             count += e;
         }
-    } catch (cave::OutOfRangeException e){
-        std::cout << "pos: " << e.pos << "\n";
+    } catch (cave::OutOfRangeException&){
         assert(false);
     }
 
@@ -41,7 +40,7 @@ void testCaveVector() {
         for (int e : vec){
             assert(e == count++);
         }
-    } catch (cave::OutOfRangeException e){
+    } catch (cave::OutOfRangeException&){
         assert(false);
     }
 
