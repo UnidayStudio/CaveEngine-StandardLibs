@@ -4,6 +4,7 @@
 #include <cstddef> // size_t
 #include <utility> // std::move, std::forward
 #include <cstdlib> // malloc, free
+#include <cstring> // memset
 
 #include "STD/Exception.h"
 
@@ -30,12 +31,7 @@ namespace cave {
         }
 
         struct Iterator {
-            using value_type = T;
-            using pointer = T*;
-            using reference = T&;
-            using difference_type = std::ptrdiff_t;
-            using iterator_category = std::bidirectional_iterator_tag;
-
+            Iterator(const Iterator& other) : current(other.current), endPrev(other.endPrev) {}
             Iterator(Node* current, Node* end=nullptr) : current(current), endPrev(end) {}
 
             T& operator*() {
