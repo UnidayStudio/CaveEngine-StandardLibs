@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "STD/String.h"
+#include "STD/StringHash.h"
 #include "STD/Exception.h"
 
 
@@ -146,6 +147,11 @@ void testCaveString() {
 //    s6.swap(s8);
 //    assert(s6 == "goodbye");
 //    assert(s8 == "hello moon");
+
+    // Test string hashing...
+    cave::String hashTest = "hmmm";
+    auto hs = std::hash<cave::String>{}(hashTest);
+    assert(hs == 5405861693744609278);
 
     std::cout << "[STRING] All tests passed!" << std::endl;
 }
