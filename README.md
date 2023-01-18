@@ -14,10 +14,12 @@ I'd like to write my own implementation of the most used `std::` classes in Cave
 | **Class (std):**| **Class (cave):** | **Status** |
 |-----------------|-------------------|------------|
 | `std::string`   | `cave::String`    |  **DONE**  |
+| `std::hash<std::string>`   | `std::hash<cave::String>`    |  **DONE**  |
 | `std::vector<T>`| `cave::Vector<T>` |  **DONE**  |
 | `std::list<T>`  | `cave::List<T>`   |  **DONE**  |
-| `std::unordered_map<K, V>`   | `cave::UMap<K, V>`    |  *In Progress*  |
-| `std::map<K, V>`   | `cave::Map<K, V>`    |  *TO DO*  |
+| `std::pair<T1, T2>`  | `cave::Pair<T1, T2>`   |  **DONE**  |
+| `std::unordered_map<K, V>`   | `cave::HashMap<K, V>`    |  **WORKING**, *but missing rehash.*  |
+| `std::map<K, V>`   | `cave::Map<K, V>`    |  *Nope! Use HashMap instead.*  |
 
 # Contributing
 Yes! If you find a bug, room for optimization or anything, feel free to make a Pull Request or **Open an Issue**! I decided to make this part of the code Open Source exactly to both help the community and also get helped, since it's a core element of the engine.
