@@ -26,4 +26,22 @@ Yes! If you find a bug, room for optimization or anything, feel free to make a P
 
 But please, keep the naming conventions and code style guides and **write Unit Tests** to the new stuff you add.
 
+## Make sure to run Valgrind before the PR!
+We don't want to introduce any memory leaks, so it's a good idea to check for them with valgrind (Linux):
+```cmd
+valgrind --leak-check=full ./Bin/Tests
+```
+You must see this in the end of the diagnostic. Notice that all the allocs were freed in this example:
+```cmd
+==791== HEAP SUMMARY:
+==791==     in use at exit: 0 bytes in 0 blocks
+==791==   total heap usage: 109 allocs, 109 frees, 106,467 bytes allocated
+==791== 
+==791== All heap blocks were freed -- no leaks are possible
+==791==
+```
+
+
+# Last but not least:
+
 ## [Join our Discord Server!](https://bit.ly/discord-uniday-us)
