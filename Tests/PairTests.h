@@ -54,5 +54,21 @@ void testCavePair() {
     assert(testP1 != testP3);
     assert(testP1 != testP4);
 
+    // Testing move constructor
+    cave::Pair<cave::String, int> pMove1("hello", 42);
+    cave::Pair<cave::String, int> pMove2(std::move(pMove1));
+    assert(pMove2.first == "hello");
+    assert(pMove2.second == 42);
+    assert(pMove1.first.empty());
+    assert(pMove1.second == 0);
+
+    // Testing copy constructor
+    cave::Pair<cave::String, int> pMove3("world", 21);
+    cave::Pair<cave::String, int> pMove4(pMove3);
+    assert(pMove4.first == "world");
+    assert(pMove4.second == 21);
+    assert(pMove3.first == "world");
+    assert(pMove3.second == 21);
+
     std::cout << "[PAIR] All tests passed!" << std::endl;
 }

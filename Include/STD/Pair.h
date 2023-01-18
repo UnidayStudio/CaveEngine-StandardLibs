@@ -13,6 +13,11 @@ namespace cave {
         T2 second;
 
         Pair() : first(), second() {}
+        Pair(const Pair& other) : first(other.first), second(other.second) {}
+        Pair(Pair&& other) : first(std::move(other.first)), second(std::move(other.second)) {
+            other.first  = T1();
+            other.second = T2();
+        }
         Pair(const T1& first, const T2& second) : first(first), second(second) {}
         Pair(T1&& first, T2&& second) : first(std::move(first)), second(std::move(second)) {}
         virtual ~Pair() {}
