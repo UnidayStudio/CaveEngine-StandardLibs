@@ -16,7 +16,6 @@ namespace cave {
     template <typename K, typename V>
     class HashMap{
         friend class Iterator;
-        struct Element;
     public:
         static constexpr size_t npos = -1;
 
@@ -27,8 +26,8 @@ namespace cave {
             m_buckets.resize(other.m_buckets.size());
             for (size_t bc=0; bc< other.m_buckets.size(); bc++){
                 for (size_t s=0; s< other.m_buckets[bc].size(); s++){
-                    const Element* e = other.m_buckets[bc][s];
-                    insert(e->key, e->value);
+                    const cave::Pair<K, V>* e = other.m_buckets[bc][s];
+                    insert(e->first, e->second);
                 }
             }
         }
@@ -43,10 +42,10 @@ namespace cave {
             Iterator(const Iterator& other) : m_owner(other.m_owner), m_bucket(other.m_bucket), m_slot(other.m_slot) {}
             Iterator(const HashMap* owner, size_t bucket, size_t slot) : m_owner(owner), m_bucket(bucket), m_slot(slot) {}
 
-            Element& operator*() {
+            cave::Pair<K, V>& operator*() {
                 return *m_owner->m_buckets.at(m_bucket).at(m_slot);
             }
-            Element* operator->() const {
+            cave::Pair<K, V>* operator->() const {
                 return m_owner->m_buckets.at(m_bucket).at(m_slot);
             }
 
@@ -169,14 +168,24 @@ namespace cave {
             return Iterator((const HashMap*)this, npos, npos);
         }
 
+        void insert(const cave::Pair<K, V>& pair){
+            const size_t hs = bucket(pair.first);
+            m_buckets[hs].pushBack(new cave::Pair<K, V>(pair));
+            m_size++;
+        }
+        void insert(cave::Pair<K, V>&& pair){
+            const size_t hs = bucket(pair.first);
+            m_buckets[hs].pushBack(new cave::Pair<K, V>(pair));
+            m_size++;
+        }
         void insert(const K& key, const V& value){
             const size_t hs = bucket(key);
-            m_buckets[hs].pushBack(new Element(key, value));
+            m_buckets[hs].pushBack(new cave::Pair<K, V>(key, value));
             m_size++;
         }
         void insert(const K& key, V&& value){
             const size_t hs = bucket(key);
-            m_buckets[hs].pushBack(new Element(key, value));
+            m_buckets[hs].pushBack(new cave::Pair<K, V>(key, value));
             m_size++;
         }
         void erase(const K& key) {
@@ -185,7 +194,7 @@ namespace cave {
             size_t id = 0;
             bool found = false;
             for (auto& e : m_buckets[hs]){
-                if (e->key == key) {
+                if (e->first == key) {
                     found = true;
                     break;
                 }
@@ -227,7 +236,7 @@ namespace cave {
             size_t id = 0;
             bool found = false;
             for (auto& e : m_buckets[hs]){
-                if (e->key == key) {
+                if (e->first == key) {
                     found = true;
                     break;
                 }
@@ -236,7 +245,7 @@ namespace cave {
             if (!found){
                 throw cave::OutOfRangeException();
             }
-            return m_buckets[hs][id]->value;
+            return m_buckets[hs][id]->second;
         }
 
         const V& at(const K& key) const {
@@ -245,7 +254,7 @@ namespace cave {
             size_t id = 0;
             bool found = false;
             for (auto& e : m_buckets[hs]){
-                if (e->key == key) {
+                if (e->first == key) {
                     found = true;
                     break;
                 }
@@ -254,7 +263,7 @@ namespace cave {
             if (!found){
                 throw cave::OutOfRangeException();
             }
-            return m_buckets[hs][id]->value;
+            return m_buckets[hs][id]->second;
         }
 
         size_t size() const {
@@ -281,7 +290,7 @@ namespace cave {
 
         void clear(){
             for (auto& bucket : m_buckets){
-                for (Element* slot : bucket){
+                for (cave::Pair<K, V>* slot : bucket){
                     delete slot;
                 }
                 bucket.clear();
@@ -294,16 +303,8 @@ namespace cave {
             return std::hash<K>{}(key);
         }
 
-        struct Element {
-            Element(const K& k, const V& v) : key(k), value(v) {}
-            Element(const K& k, V&& v) : key(k), value(std::move(v)) {}
-
-            K key;
-            V value;
-        };
-
         size_t m_size;
-        Vector<Vector<Element*>> m_buckets;
+        Vector<Vector<cave::Pair<K, V>*>> m_buckets;
     };
 }
 

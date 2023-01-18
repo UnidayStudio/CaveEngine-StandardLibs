@@ -53,7 +53,7 @@ void testCaveHashMap() {
         // Iterator when the map only have a single element...
         int i = 0;
         for (auto& it : map){
-            i += it.value;
+            i += it.second;
         }
         assert(i == 1);
     }
@@ -62,14 +62,14 @@ void testCaveHashMap() {
     {
         int i = 0;
         for (auto& it : map){
-            i += it.value;
+            i += it.second;
         }
         assert(i == 6);
     }
     {
         int i = 0;
         for(auto it = map.begin(); it != map.end(); it++ ){
-            i += it->value;
+            i += it->second;
         }
         assert(i == 6);
     }
