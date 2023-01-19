@@ -21,7 +21,7 @@ cave::String::String(cave::String&& other) noexcept : m_data(other.m_data), m_si
 }
 cave::String::~String(){
     if (m_data){
-        delete[] m_data;
+        free(m_data);
     }
 }
 
@@ -105,7 +105,7 @@ cave::String& cave::String::operator=(const cave::String& other) {
 cave::String& cave::String::operator=(cave::String&& other)  {
     if (this != &other){
         if (m_data){
-            delete[] m_data;
+            free(m_data);
         }
         m_data = other.m_data;
         m_size = other.m_size;
@@ -118,7 +118,9 @@ cave::String& cave::String::operator=(cave::String&& other)  {
 }
 
 cave::String& cave::String::operator+=(const char str) {
-    append(str);
+    reserve(m_size + 1);
+    m_data[m_size++] = str;
+    m_data[m_size] = '\0';
     return *this;
 }
 cave::String& cave::String::operator+=(const char* str) {
@@ -132,7 +134,7 @@ cave::String& cave::String::operator+=(const cave::String& other) {
 
 cave::String cave::String::operator+(const char str) {
     String out(*this);
-    out.append(str);
+    out += str;
     return out;
 }
 cave::String cave::String::operator+(const char* str) {
@@ -189,44 +191,26 @@ void cave::String::clear() {
 
 void cave::String::assign(const char* str) {
     m_size = strlen(str);
-    const size_t newBuffSize = ((m_size + 1) / bufferSize + 1) * bufferSize;
-
-    if (newBuffSize > m_allocated || newBuffSize < m_allocated - bufferSize){
-        m_allocated = newBuffSize;
-        
-        if (m_data){
-            delete[] m_data;
-        }
-        m_data = new char[m_allocated];
-    }
+    reserve(m_size);
     strcpy(m_data, str);
+    m_data[m_size] = '\0';
 }
 void cave::String::assign(const cave::String& other) {
     assign(other.m_data);
 }
 
 void cave::String::append(const char str) {
-    char payload[2];
-    payload[0] = str;
-    payload[1] = '\0';
-    append(payload);
+    reserve(m_size + 1);
+    m_data[m_size++] = str;
+    m_data[m_size] = '\0';
 }
 
 void cave::String::append(const char* str) {
     const size_t newSize = m_size + strlen(str);
-    const size_t newBuffSize = ((newSize + 1) / bufferSize + 1) * bufferSize;
-
-    if (newBuffSize > m_allocated){
-        char* newBuff = new char[newBuffSize];
-        if (m_data){
-            memcpy(newBuff, m_data, m_allocated);
-            delete[] m_data;
-        }
-        m_data = newBuff;
-        m_allocated = newBuffSize;
-    }
+    reserve(newSize);
     strcpy((char*)(m_data + m_size), str);
     m_size = newSize;
+    m_data[m_size] = '\0';
 }
 void cave::String::append(const cave::String& other) {
     append(other.m_data);
@@ -236,7 +220,9 @@ void cave::String::pushBack(const char other) {
     append(other);
 }
 void cave::String::popBack() {
-    erase(m_size - 1);
+    if (m_size > 0){
+        m_data[--m_size] = '\0';
+    }
 }
 
 int cave::String::compare(const char* str) const {
@@ -286,10 +272,9 @@ cave::String cave::String::substr(size_t pos, size_t count) const {
     }
     String result;
     result.m_size = count;
-    result.m_allocated = ((count + 1) / bufferSize + 1) * bufferSize;
-    result.m_data = new char[result.m_allocated];
+    result.reserve(result.m_size);
     strncpy(result.m_data, m_data + pos, count);
-    result.m_data[count] = '\0';
+    result.m_data[result.m_size] = '\0';
     return result;
 }
 
@@ -319,4 +304,27 @@ cave::String& cave::String::erase(size_t pos, size_t len) {
         assign(substr(0, pos) + substr(pos + len, npos));
     }
     return *this;
+}
+
+void cave::String::reserve(size_t n){
+    if (n < m_allocated){
+        return;
+    }
+    if (m_allocated == 0){
+        m_allocated = 1024;
+    }
+    while (m_allocated <= n){ 
+        m_allocated *= 2; 
+    }
+
+    if (m_data){
+        m_data = (char*)realloc(m_data, m_allocated * sizeof(char));
+    }
+    else {
+        m_data = (char*)malloc(m_allocated * sizeof(char));
+    }
+}
+
+size_t cave::String::capacity() const{
+    return m_allocated;
 }

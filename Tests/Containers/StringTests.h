@@ -243,6 +243,30 @@ void testStringPerformance() {
 
     assert(count1 == count2); // Little assert just to make sure...
 
+    {
+        // Test reserve performance
+        start = std::chrono::high_resolution_clock::now();
+        std::string testS1;
+        for (int i=1; i<100; i++){
+            testS1.reserve(i*100);
+        }
+        end = std::chrono::high_resolution_clock::now();
+        duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        dur1 = duration.count();
+
+        start = std::chrono::high_resolution_clock::now();
+        cave::String testS2;
+        for (int i=1; i<100; i++){
+            testS2.reserve(i*100);
+        }
+        end = std::chrono::high_resolution_clock::now();
+        duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        dur2 = duration.count();
+        printf("  Reserve | %9zu us | %9zu us |", dur1, dur2);
+        if (dur1 < dur2){ printf(" BAD!"); }
+        printf("\n");
+    }
+
 
     // Test removing performance
     start = std::chrono::high_resolution_clock::now();

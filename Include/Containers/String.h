@@ -9,7 +9,6 @@ namespace cave {
     class String{
     public:
         static constexpr size_t npos = -1;
-        static constexpr size_t bufferSize = 16;
 
         String(); 
         String(const char* str);
@@ -111,6 +110,9 @@ namespace cave {
         String& insert(size_t pos, const String& str);
 
         String& erase(size_t pos=0, size_t len=npos);
+
+        void reserve(size_t n);
+        size_t capacity() const;
     
     private:
         char* m_data;
