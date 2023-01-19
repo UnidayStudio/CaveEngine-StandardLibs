@@ -117,6 +117,10 @@ cave::String& cave::String::operator=(cave::String&& other)  {
     return *this;
 }
 
+cave::String& cave::String::operator+=(const char str) {
+    append(str);
+    return *this;
+}
 cave::String& cave::String::operator+=(const char* str) {
     append(str);
     return *this;
@@ -126,6 +130,11 @@ cave::String& cave::String::operator+=(const cave::String& other) {
     return *this;
 }
 
+cave::String cave::String::operator+(const char str) {
+    String out(*this);
+    out.append(str);
+    return out;
+}
 cave::String cave::String::operator+(const char* str) {
     String out(*this);
     out.append(str);
@@ -196,6 +205,13 @@ void cave::String::assign(const cave::String& other) {
     assign(other.m_data);
 }
 
+void cave::String::append(const char str) {
+    char payload[2];
+    payload[0] = str;
+    payload[1] = '\0';
+    append(payload);
+}
+
 void cave::String::append(const char* str) {
     const size_t newSize = m_size + strlen(str);
     const size_t newBuffSize = ((newSize + 1) / bufferSize + 1) * bufferSize;
@@ -214,6 +230,13 @@ void cave::String::append(const char* str) {
 }
 void cave::String::append(const cave::String& other) {
     append(other.m_data);
+}
+
+void cave::String::pushBack(const char other) {
+    append(other);
+}
+void cave::String::popBack() {
+    erase(m_size - 1);
 }
 
 int cave::String::compare(const char* str) const {
@@ -289,6 +312,11 @@ cave::String& cave::String::insert(size_t pos, const String& str) {
 }
 
 cave::String& cave::String::erase(size_t pos, size_t len) {
-    assign(substr(0, pos) + substr(pos + len, npos));    
+    if (len == npos || pos + len >= m_size - 1){
+        assign(substr(0, pos));
+    }
+    else {
+        assign(substr(0, pos) + substr(pos + len, npos));
+    }
     return *this;
 }

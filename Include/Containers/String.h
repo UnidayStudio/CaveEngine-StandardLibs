@@ -59,9 +59,11 @@ namespace cave {
         String& operator=(const String& other);
         String& operator=(String&& other);
 
+        String& operator+=(const char str);
         String& operator+=(const char* str);
         String& operator+=(const String& other);
 
+        String operator+(const char str);
         String operator+(const char* str);
         String operator+(const String& other);
 
@@ -84,8 +86,12 @@ namespace cave {
         void assign(const char* str);
         void assign(const String& other);
 
+        void append(const char str);
         void append(const char* str);
         void append(const String& other);
+
+        void pushBack(const char str);
+        void popBack();
 
         int compare(const char* str) const;
         int compare(const String& other) const;
