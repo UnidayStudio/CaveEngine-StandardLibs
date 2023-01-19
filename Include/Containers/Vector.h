@@ -39,47 +39,39 @@ namespace cave {
         }
 
         struct Iterator {
-            Iterator(const Iterator& other) : m_owner(other.m_owner), m_current(other.m_current) {}
-            Iterator(Vector* owner, size_t current) : m_owner(owner), m_current(current) {}
+            Iterator(const Iterator& other) : m_ptr(other.m_ptr) {}
+            Iterator(T* ptr) : m_ptr(ptr){}
 
             T& operator*() {
-                return m_owner->at(m_current);
+                return *m_ptr;
             }
             
             Iterator& operator++() {
-                m_current++;
+                ++m_ptr;
                 return *this;
             }
             Iterator& operator--() {
-                m_current--;
+                --m_ptr;
                 return *this;
             }
 
             Iterator operator+(int i) const {
                 Iterator copy(*this);
-                for (int j = 0; j < i; j++) {
-                    copy++;
-                }
+                copy.m_ptr += i;
                 return copy;
             }
             Iterator operator-(int i) const {
                 Iterator copy(*this);
-                for (int j = 0; j < i; j++) {
-                    copy--;
-                }
+                copy.m_ptr -= i;
                 return copy;
             }
             Iterator& operator+=(int i) {
-                for (int j = 0; j < i; j++) {
-                    (*this)++;
-                }
+                m_ptr += i;
                 return *this;
             }
 
             Iterator& operator-=(int i) {
-                for (int j = 0; j < i; j++) {
-                    (*this)--;
-                }
+                m_ptr -= i;
                 return *this;
             }
 
@@ -95,29 +87,40 @@ namespace cave {
             }
 
             bool operator==(const Iterator& other) const {
-                return m_owner == other.m_owner && m_current == other.m_current;
+                return m_ptr == other.m_ptr;
             }
 
             bool operator!=(const Iterator& other) const {
                 return !(*this == other);
             }
         private:
-            Vector* m_owner;
-            size_t m_current;
+            T* m_ptr;
         };
 
         Iterator       begin() {
-            return Iterator(this, 0);
+            if (m_data){
+                return Iterator(&m_data[0]);
+            }
+            return Iterator(nullptr);
         }
         const Iterator begin() const {
-            return Iterator(this, 0);
+            if (m_data){
+                return Iterator(&m_data[0]);
+            }
+            return Iterator(nullptr);
         }
 
         Iterator       end() {
-            return Iterator(this, size());
+            if (m_data){
+                return Iterator(&m_data[0] + m_size);
+            }
+            return Iterator(nullptr);
         }
         const Iterator end()   const {
-            return Iterator(this, size());
+            if (m_data){
+                return Iterator(&m_data[0] + m_size);
+            }
+            return Iterator(nullptr);
         }
 
         T&       front() {
