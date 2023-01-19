@@ -30,5 +30,22 @@ int main(){
     testCaveHashMapBehavior();
 
 
+    std::cout << "\n";
+    std::cout << "------------------------------------\n";
+    std::cout << "  TESTING PERFORMANCE AGAINST STD:  \n";
+    std::cout << "------------------------------------\n";
+
+    std::cout << "\n";
+    testStringPerformance();
+
+    std::cout << "\n";
+    testListPerformance();
+
+    std::cout << "\n";
+    testVectorPerformance();
+
+    std::cout << "\n";
+    testHashMapPerformance();
+    
     return 0;
 }

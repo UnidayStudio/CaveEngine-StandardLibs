@@ -252,3 +252,89 @@ void testCaveVectorBehavior() {
 
     std::cout << "[VECTOR | BEHAVIOR] All tests passed!" << std::endl;
 }
+
+// Performance checks...
+
+#include <cstdio>
+#include <chrono>
+#include <vector>
+
+void testVectorPerformance() {
+    const int N = 100000;
+
+    std::cout << " - (We'll be testing it with " << N << " elements.)\n";
+
+    printf("          |  std::vector | cave::Vector |\n");
+    size_t dur1 = 0;
+    size_t dur2 = 0;
+
+    std::vector<int> v1;
+    cave::Vector<int> v2;
+
+    // Test adding performance
+    auto start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        v1.push_back(i);
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur1 = duration.count();
+
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        v2.pushBack(i);
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur2 = duration.count();
+    printf("   Adding | %9zu us | %9zu us |", dur1, dur2);
+    if (dur1 < dur2){ printf(" BAD!"); }
+    printf("\n");
+
+
+    // Test iteration performance
+    start = std::chrono::high_resolution_clock::now();
+    int count1 = 0;
+    for (auto& i : v1) {
+        count1 += i;
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur1 = duration.count();
+
+    start = std::chrono::high_resolution_clock::now();
+    int count2 = 0;
+    for (auto& i : v2) {
+        count2 += i;
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur2 = duration.count();
+    printf("Iterating | %9zu us | %9zu us |", dur1, dur2);
+    if (dur1 < dur2){ printf(" BAD!"); }
+    printf("\n");
+
+    assert(count1 == count2); // Little assert just to make sure...
+    
+
+    // Test removing performance
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        v1.pop_back();
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur1 = duration.count();
+
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        v2.popBack();
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur2 = duration.count();
+
+    printf(" Removing | %9zu us | %9zu us |", dur1, dur2);
+    if (dur1 < dur2){ printf(" BAD!"); }
+    printf("\n");
+}

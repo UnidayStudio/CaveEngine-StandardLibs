@@ -163,3 +163,91 @@ void testCaveHashMapBehavior() {
 
     std::cout << "[HASH MAP | BEHAVIOR] All tests passed!" << std::endl;
 }
+
+
+// Performance checks...
+
+#include <cstdio>
+#include <chrono>
+#include <unordered_map>
+
+void testHashMapPerformance() {
+    const int N = 10000;
+
+    std::cout << " - (We'll be testing it with " << N << " elements.)\n";
+
+    printf("          | std::unordered_map |  cave::HashMap |\n");
+    size_t dur1 = 0;
+    size_t dur2 = 0;
+
+    std::unordered_map<int, int> map1;
+    cave::HashMap<int, int> map2;
+    
+    // Test adding performance
+    auto start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        map1[i] = i;
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur1 = duration.count();
+
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        map2[i] = i;
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur2 = duration.count();
+    printf("   Adding | %15zu us | %11zu us |", dur1, dur2);
+    if (dur1 < dur2){ printf(" BAD!"); }
+    printf("\n");
+
+
+    // Test iteration performance
+    start = std::chrono::high_resolution_clock::now();
+    int count1 = 0;
+    for (auto& it : map1) {
+        count1 += it.second;
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur1 = duration.count();
+
+    //start = std::chrono::high_resolution_clock::now();
+    //int count2 = 0;
+    //for (auto& it : map2) {
+    //    count2 += it.second;
+    //}
+    //end = std::chrono::high_resolution_clock::now();
+    //duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    //dur2 = duration.count();
+    //printf("Iterating  | % 15zu us | % 11zu us\n", dur1, dur2);
+    printf("Iterating | %15zu us |              - |", dur1);
+    if (dur1 < dur2){ printf(" BAD!"); }
+    printf("\n");
+
+    //assert(count1 == count2); // Little assert just to make sure...
+
+
+    // Test removing performance
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        map1.erase(i);
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur1 = duration.count();
+
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        map2.erase(i);
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur2 = duration.count();
+
+    printf(" Removing | %15zu us | %11zu us |", dur1, dur2);
+    if (dur1 < dur2){ printf(" BAD!"); }
+    printf("\n");
+}

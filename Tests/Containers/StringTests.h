@@ -148,6 +148,28 @@ void testCaveString() {
 //    assert(s6 == "goodbye");
 //    assert(s8 == "hello moon");
 
+    // Testing pushBack method
+    cave::String sPush1;
+    sPush1.pushBack('H');
+    sPush1.pushBack('e');
+    sPush1.pushBack('l');
+    sPush1.pushBack('l');
+    sPush1.pushBack('o');
+    assert(sPush1 == "Hello");
+
+    // Testing popBack method
+    cave::String sPush2("Hello");
+    sPush2.popBack();
+    sPush2.popBack();
+    std::cout << sPush2 << "\n";
+    assert(sPush2 == "Hel");
+    sPush2.popBack();
+    sPush2.popBack();
+    sPush2.popBack();
+    assert(sPush2 == "");
+    sPush2.popBack();
+    assert(sPush2 == "");
+
     // Test string hashing...
     cave::String hashTest = "hmmm";
     auto hs = std::hash<cave::String>{}(hashTest);
@@ -156,3 +178,90 @@ void testCaveString() {
     std::cout << "[STRING] All tests passed!" << std::endl;
 }
 
+
+
+// Performance checks...
+
+#include <cstdio>
+#include <chrono>
+#include <string>
+
+void testStringPerformance() {
+    const int N = 50000;
+
+    std::cout << " - (We'll be testing it with " << N << " elements.)\n";
+
+    printf("          |  std::string | cave::String |\n");
+    size_t dur1 = 0;
+    size_t dur2 = 0;
+
+    std::string s1;
+    cave::String s2;
+
+    // Test appending performance
+    auto start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        s1 += 'a';
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur1 = duration.count();
+
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        s2 += 'a';
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur2 = duration.count();
+    printf("   Adding | %9zu us | %9zu us |", dur1, dur2);
+    if (dur1 < dur2){ printf(" BAD!"); }
+    printf("\n");
+
+
+    // Test iteration performance
+    start = std::chrono::high_resolution_clock::now();
+    int count1 = 0;
+    for (auto& i : s1) {
+        count1 += int(i);
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur1 = duration.count();
+
+    start = std::chrono::high_resolution_clock::now();
+    int count2 = 0;
+    for (auto& i : s2) {
+        count2 += int(i);
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur2 = duration.count();
+    printf("Iterating | %9zu us | %9zu us |", dur1, dur2);
+    if (dur1 < dur2){ printf(" BAD!"); }
+    printf("\n");
+
+    assert(count1 == count2); // Little assert just to make sure...
+
+
+    // Test removing performance
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        s1.pop_back();
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur1 = duration.count();
+
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        s2.popBack();
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur2 = duration.count();
+
+    printf(" Removing | %9zu us | %9zu us |", dur1, dur2);
+    if (dur1 < dur2){ printf(" BAD!"); }
+    printf("\n");
+}

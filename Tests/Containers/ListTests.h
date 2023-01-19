@@ -79,6 +79,27 @@ void testCaveList() {
     list.clear();
     assert(list.empty());
     assert(list.size() == 0);
+
+    // To Test pop front and back
+    cave::List<int> listPop;
+    listPop.pushBack(1);
+    listPop.pushBack(2);
+    listPop.pushBack(3);
+
+    // Test popFront
+    assert(listPop.front() == 1);
+    listPop.popFront();
+    assert(listPop.front() == 2);
+    assert(listPop.size() == 2);
+    listPop.popFront();
+    assert(listPop.front() == 3);
+    assert(listPop.size() == 1);
+
+    // Test popBack
+    assert(listPop.back() == 3);
+    listPop.popBack();
+    assert(listPop.empty() == true);
+    assert(listPop.size() == 0);
     
     std::cout << "[LIST] All tests passed!" << std::endl;
 }
@@ -120,3 +141,88 @@ void testCaveListIterator() {
     std::cout << "[LIST | ITERATOR] All tests passed!" << std::endl;
 }
 
+// Performance checks...
+
+#include <cstdio>
+#include <chrono>
+#include <list>
+
+void testListPerformance() {
+    const int N = 100000;
+
+    std::cout << " - (We'll be testing it with " << N << " elements.)\n";
+
+    printf("          |  std::list | cave::List |\n");
+    size_t dur1 = 0;
+    size_t dur2 = 0;
+
+    std::list<int> l1;
+    cave::List<int> l2;
+
+    // Test adding performance
+    auto start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        l1.push_back(i);
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur1 = duration.count();
+
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        l2.pushBack(i);
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur2 = duration.count();
+    printf("   Adding | %7zu us | %7zu us |", dur1, dur2);
+    if (dur1 < dur2){ printf(" BAD!"); }
+    printf("\n");
+
+
+    // Test iteration performance
+    start = std::chrono::high_resolution_clock::now();
+    int count1 = 0;
+    for (auto& i : l1) {
+        count1 += i;
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur1 = duration.count();
+
+    start = std::chrono::high_resolution_clock::now();
+    int count2 = 0;
+    for (auto& i : l2) {
+        count2 += i;
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur2 = duration.count();
+    printf("Iterating | %7zu us | %7zu us |", dur1, dur2);
+    if (dur1 < dur2){ printf(" BAD!"); }
+    printf("\n");
+
+    assert(count1 == count2); // Little assert just to make sure...
+
+
+    // Test removing performance
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        l1.pop_back();
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur1 = duration.count();
+
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        l2.popBack();
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur2 = duration.count();
+
+    printf(" Removing | %7zu us | %7zu us |", dur1, dur2);
+    if (dur1 < dur2){ printf(" BAD!"); }
+    printf("\n");
+}
