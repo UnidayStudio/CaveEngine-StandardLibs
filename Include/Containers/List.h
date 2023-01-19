@@ -179,6 +179,17 @@ namespace cave {
             addToStartInternal(buildNodeInternal(std::forward<Args>(args)...));
         }
 
+        void popBack(){
+            if (m_last){
+                removeNodeInternal(m_last);
+            }
+        }
+        void popFront(){
+            if (m_first){
+                removeNodeInternal(m_first);
+            }
+        }
+
         // For compatibility with the std style naming:
         inline void push_back(const T& value) { pushBack(value); }
         inline void push_back(T&& value) { pushBack(value); }
@@ -188,6 +199,8 @@ namespace cave {
         inline void push_front(T&& value) { pushFront(value); }
         template<typename... Args>
         inline void emplace_front(Args&&... args) { emplaceFront(std::forward<Args>(args)...); }
+        inline void pop_back() { popBack(); }
+        inline void pop_front() { popFront(); }
 
         size_t size() const {
             return m_size;
