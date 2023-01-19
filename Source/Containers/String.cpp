@@ -192,7 +192,7 @@ void cave::String::clear() {
 void cave::String::assign(const char* str) {
     m_size = strlen(str);
     reserve(m_size);
-    strcpy(m_data, str);
+    memcpy(m_data, str, m_size * sizeof(char));
     m_data[m_size] = '\0';
 }
 void cave::String::assign(const cave::String& other) {
@@ -208,7 +208,7 @@ void cave::String::append(const char str) {
 void cave::String::append(const char* str) {
     const size_t newSize = m_size + strlen(str);
     reserve(newSize);
-    strcpy((char*)(m_data + m_size), str);
+    memcpy((void*)(m_data + m_size), str, (newSize - m_size) * sizeof(char));
     m_size = newSize;
     m_data[m_size] = '\0';
 }
