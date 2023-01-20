@@ -214,20 +214,19 @@ void testHashMapPerformance() {
     duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     dur1 = duration.count();
 
-    //start = std::chrono::high_resolution_clock::now();
-    //int count2 = 0;
-    //for (auto& it : map2) {
-    //    count2 += it.second;
-    //}
-    //end = std::chrono::high_resolution_clock::now();
-    //duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-    //dur2 = duration.count();
-    //printf("Iterating  | % 15zu us | % 11zu us\n", dur1, dur2);
-    printf("Iterating | %15zu us |              - |", dur1);
+    start = std::chrono::high_resolution_clock::now();
+    int count2 = 0;
+    for (auto& it : map2) {
+        count2 += it.second;
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur2 = duration.count();
+    printf("Iterating | %15zu us | %11zu us |", dur1, dur2);
     if (dur1 < dur2){ printf(" BAD!"); }
     printf("\n");
 
-    //assert(count1 == count2); // Little assert just to make sure...
+    assert(count1 == count2); // Little assert just to make sure...
 
 
     // Test removing performance

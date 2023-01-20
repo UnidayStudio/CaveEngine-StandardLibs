@@ -19,7 +19,7 @@ namespace cave {
     public:
         static constexpr size_t npos = -1;
 
-        HashMap(size_t size=128) : m_size(0) {
+        HashMap(size_t size=1024) : m_size(0) {
             m_buckets.resize(size);
         }
         HashMap(const HashMap& other) : m_size(0) {
@@ -55,12 +55,14 @@ namespace cave {
                     m_bucket++;
                     m_slot = 0;
                 }
-                while(m_owner->m_buckets[m_bucket].size() == 0){
-                    m_bucket++;
-                    if (m_bucket >= m_owner->m_buckets.size()){
-                        m_bucket = npos;
-                        m_slot = npos;
-                        break;
+                if (m_bucket < m_owner->m_buckets.size()){
+                    while(m_owner->m_buckets[m_bucket].size() == 0){
+                        m_bucket++;
+                        if (m_bucket >= m_owner->m_buckets.size()){
+                            m_bucket = npos;
+                            m_slot = npos;
+                            break;
+                        }
                     }
                 }
                 if (m_bucket >= m_owner->m_buckets.size()){
