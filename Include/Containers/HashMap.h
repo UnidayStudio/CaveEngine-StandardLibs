@@ -19,7 +19,7 @@ namespace cave {
     public:
         static constexpr size_t npos = -1;
 
-        HashMap(size_t size=1024) : m_size(0) {
+        HashMap(size_t size=4096) : m_size(0) {
             m_buckets.resize(size);
         }
         HashMap(const HashMap& other) : m_size(0) {
@@ -43,31 +43,25 @@ namespace cave {
             Iterator(const HashMap* owner, size_t bucket, size_t slot) : m_owner(owner), m_bucket(bucket), m_slot(slot) {}
 
             cave::Pair<K, V>& operator*() {
-                return *m_owner->m_buckets.at(m_bucket).at(m_slot);
+                return *m_owner->m_buckets[m_bucket][m_slot];
             }
             cave::Pair<K, V>* operator->() const {
-                return m_owner->m_buckets.at(m_bucket).at(m_slot);
+                return m_owner->m_buckets[m_bucket][m_slot];
             }
 
             Iterator& operator++() {
                 m_slot++;
                 if (m_slot >= m_owner->m_buckets[m_bucket].size()){
-                    m_bucket++;
+                    const size_t ownerBucketCount = m_owner->m_buckets.size();
                     m_slot = 0;
-                }
-                if (m_bucket < m_owner->m_buckets.size()){
-                    while(m_owner->m_buckets[m_bucket].size() == 0){
+                    do {
                         m_bucket++;
-                        if (m_bucket >= m_owner->m_buckets.size()){
+                        if (m_bucket >= ownerBucketCount){
                             m_bucket = npos;
                             m_slot = npos;
                             break;
                         }
-                    }
-                }
-                if (m_bucket >= m_owner->m_buckets.size()){
-                    m_bucket = npos;
-                    m_slot = npos;
+                    } while (m_owner->m_buckets[m_bucket].size() == 0);
                 }
                 return *this;
             }
@@ -223,13 +217,16 @@ namespace cave {
         }
 
         V& operator[](const K& key) {
-            try {
-                return at(key);
+            const size_t hs = bucket(key);
+
+            for (auto& e : m_buckets[hs]){
+                if (e->first == key) {
+                    return e->second;
+                }
             }
-            catch (cave::OutOfRangeException&){
-                insert(key, V());
-            }
-            return at(key);
+            m_buckets[hs].pushBack(new cave::Pair<K, V>(key, V()));
+            m_size++;
+            return m_buckets[hs].back()->second;
         }
 
         V& at(const K& key) {

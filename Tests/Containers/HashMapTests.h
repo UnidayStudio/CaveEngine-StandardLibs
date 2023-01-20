@@ -172,7 +172,7 @@ void testCaveHashMapBehavior() {
 #include <unordered_map>
 
 void testHashMapPerformance() {
-    const int N = 10000;
+    const int N = 100000;
 
     std::cout << " - (We'll be testing it with " << N << " elements.)\n";
 
@@ -200,6 +200,27 @@ void testHashMapPerformance() {
     duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     dur2 = duration.count();
     printf("   Adding | %15zu us | %11zu us |", dur1, dur2);
+    if (dur1 < dur2){ printf(" BAD!"); }
+    printf("\n");
+
+
+    // Test random access performance
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        map1.at(i);
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur1 = duration.count();
+
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; i++) {
+        map2.at(1);
+    }
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    dur2 = duration.count();
+    printf("R. Access | %15zu us | %11zu us |", dur1, dur2);
     if (dur1 < dur2){ printf(" BAD!"); }
     printf("\n");
 
