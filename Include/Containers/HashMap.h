@@ -24,10 +24,9 @@ namespace cave {
         }
         HashMap(const HashMap& other) : m_size(0) {
             m_buckets.resize(other.m_buckets.size());
-            for (size_t bc=0; bc< other.m_buckets.size(); bc++){
-                for (size_t s=0; s< other.m_buckets[bc].size(); s++){
-                    const cave::Pair<K, V>* e = other.m_buckets[bc][s];
-                    insert(e->first, e->second);
+            for (auto& bucket : other.m_buckets){
+                for (auto& it : bucket){
+                    insert(it);
                 }
             }
         }
@@ -43,10 +42,10 @@ namespace cave {
             Iterator(const HashMap* owner, size_t bucket, size_t slot) : m_owner(owner), m_bucket(bucket), m_slot(slot) {}
 
             cave::Pair<K, V>& operator*() {
-                return *m_owner->m_buckets[m_bucket][m_slot];
+                return m_owner->m_buckets[m_bucket][m_slot];
             }
             cave::Pair<K, V>* operator->() const {
-                return m_owner->m_buckets[m_bucket][m_slot];
+                return &m_owner->m_buckets[m_bucket][m_slot];
             }
 
             Iterator& operator++() {
@@ -166,22 +165,22 @@ namespace cave {
 
         void insert(const cave::Pair<K, V>& pair){
             const size_t hs = bucket(pair.first);
-            m_buckets[hs].pushBack(new cave::Pair<K, V>(pair));
+            m_buckets[hs].emplaceBack(pair);
             m_size++;
         }
         void insert(cave::Pair<K, V>&& pair){
             const size_t hs = bucket(pair.first);
-            m_buckets[hs].pushBack(new cave::Pair<K, V>(pair));
+            m_buckets[hs].emplaceBack(pair);
             m_size++;
         }
         void insert(const K& key, const V& value){
             const size_t hs = bucket(key);
-            m_buckets[hs].pushBack(new cave::Pair<K, V>(key, value));
+            m_buckets[hs].emplaceBack(key, value);
             m_size++;
         }
         void insert(const K& key, V&& value){
             const size_t hs = bucket(key);
-            m_buckets[hs].pushBack(new cave::Pair<K, V>(key, value));
+            m_buckets[hs].emplaceBack(key, value);
             m_size++;
         }
         void erase(const K& key) {
@@ -190,14 +189,13 @@ namespace cave {
             size_t id = 0;
             bool found = false;
             for (auto& e : m_buckets[hs]){
-                if (e->first == key) {
+                if (e.first == key) {
                     found = true;
                     break;
                 }
                 id++;
             }
             if (found){
-                delete m_buckets[hs][id];
                 m_buckets[hs].erase(id);
                 m_size--;
             }
@@ -220,13 +218,14 @@ namespace cave {
             const size_t hs = bucket(key);
 
             for (auto& e : m_buckets[hs]){
-                if (e->first == key) {
-                    return e->second;
+                if (e.first == key) {
+                    return e.second;
                 }
             }
-            m_buckets[hs].pushBack(new cave::Pair<K, V>(key, V()));
+
+            m_buckets[hs].emplaceBack(key, V());
             m_size++;
-            return m_buckets[hs].back()->second;
+            return m_buckets[hs].back().second;
         }
 
         V& at(const K& key) {
@@ -235,7 +234,7 @@ namespace cave {
             size_t id = 0;
             bool found = false;
             for (auto& e : m_buckets[hs]){
-                if (e->first == key) {
+                if (e.first == key) {
                     found = true;
                     break;
                 }
@@ -244,7 +243,7 @@ namespace cave {
             if (!found){
                 throw cave::OutOfRangeException();
             }
-            return m_buckets[hs][id]->second;
+            return m_buckets[hs][id].second;
         }
 
         const V& at(const K& key) const {
@@ -253,7 +252,7 @@ namespace cave {
             size_t id = 0;
             bool found = false;
             for (auto& e : m_buckets[hs]){
-                if (e->first == key) {
+                if (e.first == key) {
                     found = true;
                     break;
                 }
@@ -262,7 +261,7 @@ namespace cave {
             if (!found){
                 throw cave::OutOfRangeException();
             }
-            return m_buckets[hs][id]->second;
+            return m_buckets[hs][id].second;
         }
 
         size_t size() const {
@@ -289,9 +288,6 @@ namespace cave {
 
         void clear(){
             for (auto& bucket : m_buckets){
-                for (cave::Pair<K, V>* slot : bucket){
-                    delete slot;
-                }
                 bucket.clear();
             }
             m_size = 0;
@@ -303,7 +299,7 @@ namespace cave {
         }
 
         size_t m_size;
-        Vector<Vector<cave::Pair<K, V>*>> m_buckets;
+        Vector<Vector<cave::Pair<K, V>>> m_buckets;
     };
 }
 
