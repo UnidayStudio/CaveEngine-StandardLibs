@@ -100,6 +100,17 @@ void testCaveList() {
     listPop.popBack();
     assert(listPop.empty() == true);
     assert(listPop.size() == 0);
+
+    // Test initializer list:
+    {
+        cave::List<int> listInit = {1, 2, 3, 4, 5};
+        assert(listInit.size() == 5);
+        assert(listInit.front() == 1);
+        for (int i=0; i<5; i++){
+            assert(listInit[i] == i + 1);
+        }
+        assert(listInit.back() == 5);
+    }
     
     std::cout << "[LIST] All tests passed!" << std::endl;
 }

@@ -5,6 +5,7 @@
 #include <utility> // std::move, std::forward
 #include <cstdlib> // malloc, free
 #include <cstring> // memset
+#include <initializer_list>
 
 #include "Containers/Exception.h"
 
@@ -16,6 +17,11 @@ namespace cave {
         struct Node;
     public:
         List() : m_first(nullptr), m_last(nullptr), m_size(0) {}
+        List(std::initializer_list<T> initList) : m_first(nullptr), m_last(nullptr), m_size(0) {
+            for (const auto& obj: initList){
+                pushBack(obj);
+            }
+        }
         List(const List& other) : m_first(nullptr), m_last(nullptr), m_size(0){
             for (size_t i=0; i< other.size(); i++){
                 emplaceBack(other.at(i));

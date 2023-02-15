@@ -122,6 +122,17 @@ void testCaveVector() {
     vec.resize(2);
     assert(vec.size() == 2);
 
+    // Test initializer list:
+    {
+        cave::Vector<int> vecInit = {1, 2, 3, 4, 5};
+        assert(vecInit.size() == 5);
+        assert(vecInit.front() == 1);
+        for (int i=0; i<5; i++){
+            assert(vecInit[i] == i + 1);
+        }
+        assert(vecInit.back() == 5);
+    }
+
     std::cout << "[VECTOR] All tests passed!" << std::endl;
 }
 

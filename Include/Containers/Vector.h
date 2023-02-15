@@ -4,6 +4,7 @@
 #include <cstddef> // size_t
 #include <utility> // std::move, std::forward
 #include <cstdlib> // malloc, free
+#include <initializer_list>
 
 #include "Containers/Exception.h"
 
@@ -16,6 +17,12 @@ namespace cave {
         static constexpr size_t minAllocatedSlots = 64;
 
         Vector() : m_data(nullptr), m_size(0), m_allocated(0) {}
+        Vector(std::initializer_list<T> initList) : m_data(nullptr), m_size(0), m_allocated(0) {
+            reserve(initList.size());
+            for (const auto& obj: initList){
+                pushBack(obj);
+            }
+        }
         Vector(const Vector& other) : m_data(nullptr), m_size(0), m_allocated(0) {
             fitNewSize(other.m_size);
             
