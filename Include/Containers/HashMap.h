@@ -15,7 +15,6 @@
 namespace cave {
     template <typename K, typename V>
     class HashMap{
-        friend class Iterator;
     public:
         static constexpr size_t npos = -1;
 
@@ -26,7 +25,7 @@ namespace cave {
             m_buckets.resize(other.m_buckets.size());
             for (auto& bucket : other.m_buckets){
                 for (auto& it : bucket){
-                    insert(it);
+                    insert(it.value);
                 }
             }
         }
@@ -37,52 +36,61 @@ namespace cave {
             clear();
         }
 
-        struct Iterator {
-            Iterator(const Iterator& other) : m_owner(other.m_owner), m_bucket(other.m_bucket), m_slot(other.m_slot) {}
-            Iterator(const HashMap* owner, size_t bucket, size_t slot) : m_owner(owner), m_bucket(bucket), m_slot(slot) {}
-
+        struct Container {
+            Container() {}
+            Container(const Container& other)  : value(other.value), previous(other.previous), next(other.next) {}
+            Container(const Container&& other) : value(std::move(other.value)), previous(other.previous), next(other.next) {}
+            Container(const K& k, const V& v)  : value(k, v) {}
+            Container(const K&& k, const V&& v): value(std::move(k), std::move(v)) {}
+            Container(const cave::Pair<K, V>& pair)  : value(pair) {}
+            Container(const cave::Pair<K, V>&& pair) : value(std::move(pair)) {}
+            
             cave::Pair<K, V>& operator*() {
-                return m_owner->m_buckets[m_bucket][m_slot];
+                return value;
             }
             cave::Pair<K, V>* operator->() const {
-                return &m_owner->m_buckets[m_bucket][m_slot];
+                return &value;
+            }
+
+            bool operator==(const Container& other) const {
+                return value == other.value;
+            }
+
+            bool operator!=(const Container& other) const {
+                return !(*this == other);
+            }
+
+            cave::Pair<K, V> value;
+
+            Container* previous = nullptr;
+            Container* next = nullptr;
+        };
+
+        struct Iterator {
+            Iterator() {}
+            Iterator(Container* container) : element(container) {}
+            Iterator(const Iterator& other) : element(other.element) {}
+
+            cave::Pair<K, V>& operator*() {
+                // Should I do something if element is null? Perhaps throw an exception...?
+                return element->value;
+            }
+            cave::Pair<K, V>* operator->() const {
+                if (element){
+                    return &(element->value);
+                }
+                return nullptr;
             }
 
             Iterator& operator++() {
-                m_slot++;
-                if (m_slot >= m_owner->m_buckets[m_bucket].size()){
-                    const size_t ownerBucketCount = m_owner->m_buckets.size();
-                    m_slot = 0;
-                    do {
-                        m_bucket++;
-                        if (m_bucket >= ownerBucketCount){
-                            m_bucket = npos;
-                            m_slot = npos;
-                            break;
-                        }
-                    } while (m_owner->m_buckets[m_bucket].size() == 0);
+                if (element){
+                    element = element->next;
                 }
                 return *this;
             }
             Iterator& operator--() {
-                if (m_bucket == npos){
-                    m_bucket = m_owner->m_buckets.size() - 1;
-                    m_slot = m_owner->m_buckets.back().size() - 1;
-                }
-                else {
-                    if (m_slot == 0 && m_bucket > 0){
-                        m_bucket--;
-                        m_slot = m_owner->m_buckets[m_bucket].size() - 1;
-                    }
-                    else {
-                        m_slot--;
-                    }
-                }
-                while (m_bucket >= 0 && m_owner->m_buckets[m_bucket].size() == 0){
-                    m_bucket--;
-                    if (m_bucket >= 0){
-                        m_slot = m_owner->m_buckets[m_bucket].size() - 1;
-                    }
+                if (element){
+                    element = element->previous;
                 }
                 return *this;
             }
@@ -129,59 +137,63 @@ namespace cave {
             }
 
             bool operator==(const Iterator& other) const {
-                return m_owner == other.m_owner && m_bucket == other.m_bucket && m_slot == other.m_slot;
+                if (element && other.element){
+                    return *element == *other.element;
+                }
+                else if (element == nullptr && other.element == nullptr){
+                    return true;
+                }
+                return false;
             }
 
             bool operator!=(const Iterator& other) const {
                 return !(*this == other);
             }
 
-        private:
-            const HashMap* m_owner;
-            size_t m_bucket;
-            size_t m_slot;
+            Container* element;
         };
 
         Iterator begin() {
-            size_t b = 0;
-            for (auto& bucket : m_buckets){
-                if (bucket.size() > 0){
-                    return Iterator(this, b, 0);
-                }
-                b++;
-            }
-            return Iterator(this, npos, npos);
+            return Iterator(m_firstContainer);
         }
         const Iterator begin() const {
-            return Iterator((const HashMap*)this, npos, npos);
+            return Iterator(m_firstContainer);
         }
 
         Iterator end() {
-            return Iterator(this, npos, npos);
+            return Iterator(nullptr);
         }
         const Iterator end() const {
-            return Iterator((const HashMap*)this, npos, npos);
+            return Iterator(nullptr);
         }
 
         void insert(const cave::Pair<K, V>& pair){
             const size_t hs = bucket(pair.first);
             m_buckets[hs].emplaceBack(pair);
             m_size++;
+
+            updateNewContainerForIteration(hs);
         }
         void insert(cave::Pair<K, V>&& pair){
             const size_t hs = bucket(pair.first);
             m_buckets[hs].emplaceBack(pair);
             m_size++;
+
+            updateNewContainerForIteration(hs);
         }
         void insert(const K& key, const V& value){
             const size_t hs = bucket(key);
             m_buckets[hs].emplaceBack(key, value);
             m_size++;
+
+            updateNewContainerForIteration(hs);
         }
         void insert(const K& key, V&& value){
             const size_t hs = bucket(key);
             m_buckets[hs].emplaceBack(key, value);
             m_size++;
+
+            updateNewContainerForIteration(hs);
         }
         void erase(const K& key) {
             const size_t hs = bucket(key);
@@ -189,7 +201,17 @@ namespace cave {
             size_t id = 0;
             bool found = false;
             for (auto& e : m_buckets[hs]){
-                if (e.first == key) {
+                if (e.value.first == key) {
+                    if (e.previous){
+                        e.previous->next = e.next;
+                    }
+                    if (e.next){
+                        e.next->previous = e.previous;
+                    }
+                    if (m_firstContainer == &e){
+                        m_firstContainer = e.next;
+                    }
+
                     found = true;
                     break;
                 }
@@ -218,14 +240,16 @@ namespace cave {
             const size_t hs = bucket(key);
 
             for (auto& e : m_buckets[hs]){
-                if (e.first == key) {
-                    return e.second;
+                if (e.value.first == key) {
+                    return e.value.second;
                 }
             }
 
             m_buckets[hs].emplaceBack(key, V());
             m_size++;
-            return m_buckets[hs].back().second;
+            updateNewContainerForIteration(hs);
+
+            return m_buckets[hs].back().value.second;
         }
 
         V& at(const K& key) {
@@ -234,7 +258,7 @@ namespace cave {
             size_t id = 0;
             bool found = false;
             for (auto& e : m_buckets[hs]){
-                if (e.first == key) {
+                if (e.value.first == key) {
                     found = true;
                     break;
                 }
@@ -243,7 +267,7 @@ namespace cave {
             if (!found){
                 throw cave::OutOfRangeException();
             }
-            return m_buckets[hs][id].second;
+            return m_buckets[hs][id].value.second;
         }
 
         const V& at(const K& key) const {
@@ -252,7 +276,7 @@ namespace cave {
             size_t id = 0;
             bool found = false;
             for (auto& e : m_buckets[hs]){
-                if (e.first == key) {
+                if (e.value.first == key) {
                     found = true;
                     break;
                 }
@@ -261,7 +285,7 @@ namespace cave {
             if (!found){
                 throw cave::OutOfRangeException();
             }
-            return m_buckets[hs][id].second;
+            return m_buckets[hs][id].value.second;
         }
 
         size_t size() const {
@@ -290,16 +314,29 @@ namespace cave {
             for (auto& bucket : m_buckets){
                 bucket.clear();
             }
+            m_firstContainer = nullptr;
             m_size = 0;
         }
 
-    private:
+    private:    
+        void updateNewContainerForIteration(size_t hs) {
+            auto& back = m_buckets[hs].back();
+            back.next = m_firstContainer;
+            
+            if (m_firstContainer){
+                m_firstContainer->previous = &back;
+            }
+            m_firstContainer = &back;
+        }
+
         size_t hash(const K& key) const {
             return std::hash<K>{}(key);
         }
 
         size_t m_size;
-        Vector<Vector<cave::Pair<K, V>>> m_buckets;
+        Vector<Vector<Container>> m_buckets;
+
+        Container* m_firstContainer = nullptr;
     };
 }
 
