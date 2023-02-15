@@ -52,43 +52,43 @@ const char& cave::String::back() const {
     return at(m_size - 1);    
 }
 
-bool cave::String::operator==(const char* other) {
+bool cave::String::operator==(const char* other) const {
     return compare(other) == 0;
 }
-bool cave::String::operator==(const cave::String& other) {
+bool cave::String::operator==(const cave::String& other) const {
     return compare(other) == 0;
 }
 
-bool cave::String::operator!=(const char* other) {
+bool cave::String::operator!=(const char* other) const {
     return compare(other) != 0;
 }
-bool cave::String::operator!=(const cave::String& other) {
+bool cave::String::operator!=(const cave::String& other) const {
     return compare(other) != 0;
 }
 
-bool cave::String::operator<(const char* other) {
+bool cave::String::operator<(const char* other) const {
     return compare(other) < 0;
 }
-bool cave::String::operator<(const cave::String& other) {
+bool cave::String::operator<(const cave::String& other) const {
     return compare(other) < 0;
 }
-bool cave::String::operator>(const char* other) {
+bool cave::String::operator>(const char* other) const {
     return compare(other) > 0;
 }
-bool cave::String::operator>(const cave::String& other) {
+bool cave::String::operator>(const cave::String& other) const {
     return compare(other) > 0;
 }
 
-bool cave::String::operator<=(const char* other) {
+bool cave::String::operator<=(const char* other) const {
     return compare(other) <= 0;
 }
-bool cave::String::operator<=(const cave::String& other) {
+bool cave::String::operator<=(const cave::String& other) const {
     return compare(other) <= 0;
 }
-bool cave::String::operator>=(const char* other) {
+bool cave::String::operator>=(const char* other) const {
     return compare(other) >= 0;
 }
-bool cave::String::operator>=(const cave::String& other) {
+bool cave::String::operator>=(const cave::String& other) const {
     return compare(other) >= 0;
 }
 

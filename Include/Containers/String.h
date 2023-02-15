@@ -38,21 +38,21 @@ namespace cave {
             return os;
         }
 
-        bool operator==(const char* other);
-        bool operator==(const String& other);
+        bool operator==(const char* other)   const;
+        bool operator==(const String& other) const;
 
-        bool operator!=(const char* other);
-        bool operator!=(const String& other);
+        bool operator!=(const char* other)   const;
+        bool operator!=(const String& other) const;
 
-        bool operator<(const char* other);
-        bool operator<(const String& other);
-        bool operator>(const char* other);
-        bool operator>(const String& other);
+        bool operator<(const char* other)   const;
+        bool operator<(const String& other) const;
+        bool operator>(const char* other)   const;
+        bool operator>(const String& other) const;
 
-        bool operator<=(const char* other);
-        bool operator<=(const String& other);        
-        bool operator>=(const char* other);
-        bool operator>=(const String& other);
+        bool operator<=(const char* other)   const;
+        bool operator<=(const String& other) const;        
+        bool operator>=(const char* other)   const;
+        bool operator>=(const String& other) const;
 
         String& operator=(const char* str);
         String& operator=(const String& other);
