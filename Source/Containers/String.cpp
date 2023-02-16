@@ -6,10 +6,18 @@
 
 #include "Containers/Exception.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4996) // strcpy and others...
+#endif
+
 
 cave::String::String() : m_data(nullptr), m_size(0), m_allocated(0) {}
 cave::String::String(const char* str) : m_data(nullptr), m_size(0), m_allocated(0) {
     assign(str);
+}
+cave::String::String(const std::string& other) : m_data(nullptr), m_size(0), m_allocated(0) {
+    assign(other.c_str());
 }
 cave::String::String(const cave::String& other) : m_data(nullptr), m_size(0), m_allocated(0) {
     assign(other);
@@ -96,6 +104,10 @@ cave::String& cave::String::operator=(const char* str) {
     assign(str);
     return *this;
 }
+cave::String& cave::String::operator=(const std::string& str) {
+    assign(str.c_str());
+    return *this;
+}
 cave::String& cave::String::operator=(const cave::String& other) {
     if (this != &other){
         assign(other);
@@ -146,6 +158,18 @@ cave::String cave::String::operator+(const cave::String& other) {
     String out(*this);
     out.append(other);
     return out;
+}
+
+cave::String operator+(const char* lStr, const cave::String& rStr) {
+    return cave::String(lStr) + rStr;
+}
+
+cave::String operator+(const cave::String& lStr, const char* rStr) {
+    return cave::String(lStr) + cave::String(rStr);
+}
+
+cave::String operator+(const cave::String& lStr, cave::String& rStr) {
+    return cave::String(lStr) + cave::String(rStr);
 }
 
 char cave::String::operator[](size_t pos) const {
@@ -328,3 +352,7 @@ void cave::String::reserve(size_t n){
 size_t cave::String::capacity() const{
     return m_allocated;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
