@@ -73,6 +73,10 @@ void testCaveHashMap() {
         }
         assert(i == 6);
     }
+
+    // Test find
+    assert(map.find("it second") != map.end());
+    assert(map.find("invalid key") == map.end());
     
     std::cout << "[HASH MAP] All tests passed!" << std::endl;
 }

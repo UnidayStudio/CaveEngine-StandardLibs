@@ -8,6 +8,7 @@
 #include "Containers/Vector.h"
 #include "Containers/Pair.h"
 #include "Containers/Exception.h"
+#include "Containers/StringHash.h"
 
 #include <iostream>
 
@@ -167,6 +168,28 @@ namespace cave {
             return Iterator(nullptr);
         }
 
+        Iterator find(const K& key){
+            const size_t hs = bucket(key);
+
+            for (auto& e : m_buckets[hs]){
+                if (e.value.first == key) {
+                    return Iterator(&e);
+                }
+            }
+            return end();
+        }
+
+        const Iterator find(const K& key) const {
+            const size_t hs = bucket(key);
+
+            for (auto& e : m_buckets[hs]){
+                if (e.value.first == key) {
+                    return Iterator(&e);
+                }
+            }
+            return end();
+        }        
+
         void insert(const cave::Pair<K, V>& pair){
             const size_t hs = bucket(pair.first);
             m_buckets[hs].emplaceBack(pair);
@@ -194,6 +217,11 @@ namespace cave {
             m_size++;
 
             updateNewContainerForIteration(hs);
+        }
+        void erase(const Iterator& iter){
+            // TODO: Optimize this and add unit tests. I've added this like 
+            // that just to make it compatible with std...
+            erase(iter.element->value.first);
         }
         void erase(const K& key) {
             const size_t hs = bucket(key);
