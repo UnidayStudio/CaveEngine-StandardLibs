@@ -8,6 +8,10 @@
 #include "Containers/Exception.h"
 
 
+bool __sortReverseInts(int a, int b){
+    return a > b;
+}
+
 void testCaveVector() {
     std::cout << "[VECTOR] Running tests...\n";
 
@@ -160,6 +164,16 @@ void testCaveVector() {
         assert(vecInit.back() == 5);
     }
 
+    // Test Iterator diff (friend operator-)
+    {
+        cave::Vector<int> vecDiff = {1, 2, 3, 4, 5};
+        auto it1 = vecDiff.begin();
+        auto it2 = vecDiff.begin();
+
+        it1 += 3;
+        assert(it1 - it2 == 3);
+    }
+
     // Test assignment operator
     {
          // Test empty vectors
@@ -202,6 +216,23 @@ void testCaveVector() {
             v2 = v1;
             cave::Vector<int> cmp = {1, 2, 3};
             assert(v2 == cmp);
+        }
+    }
+
+    // Test sort
+    {
+        cave::Vector<int> v1 = {4, 5, 1, 3, 2, 0};
+        v1.sort();
+
+        for (int i=0; i<6; i++){
+            assert(v1[i] == i);
+        }
+
+        cave::Vector<int> v2 = {4, 5, 1, 3, 2, 0};
+        v2.sort(__sortReverseInts);
+
+        for (int i=0; i<6; i++){
+            assert(v2[i] == 5 - i);
         }
     }
 

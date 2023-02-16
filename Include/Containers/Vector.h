@@ -5,6 +5,7 @@
 #include <utility> // std::move, std::forward
 #include <cstdlib> // malloc, free
 #include <cstddef> // std::ptrdiff_t
+#include <algorithm> // std::sort
 #include <initializer_list>
 
 #include "Containers/Exception.h"
@@ -83,6 +84,11 @@ namespace cave {
 
             T& operator*() {
                 return *m_ptr;
+            }
+
+            friend std::ptrdiff_t operator-(const Iterator& lIter, const Iterator& rIter){
+                std::ptrdiff_t diff = lIter.m_ptr - rIter.m_ptr;
+                return diff;
             }
             
             Iterator& operator++() {
@@ -290,6 +296,17 @@ namespace cave {
                 }
             }
             return npos;
+        }
+
+        void sort(){
+            T* first = begin().getPointer();
+            std::sort(first, first + m_size);
+        }
+
+        template <class Compare>
+        void sort(Compare comp){
+            T* first = begin().getPointer();
+            std::sort(first, first + m_size, comp);
         }
 
         size_t size()  const{
