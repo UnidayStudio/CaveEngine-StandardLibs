@@ -83,6 +83,33 @@ void testCaveVector() {
     assert(vec[0] == 1);
     assert(vec[1] == 2);
 
+    // test == and !=
+    {
+        std::vector<int> v1 = {1, 2, 3};
+        std::vector<int> v2 = {1, 2, 3};
+        std::vector<int> v3 = {1, 2, 4};
+        std::vector<int> v4 = {1, 2, 3, 4};
+
+        assert(v1 == v2);
+        assert(!(v1 != v2));
+        assert(v1 != v3);
+        assert(!(v1 == v3));
+        assert(v1 != v4);
+        assert(!(v1 == v4));
+    }
+
+    // test erase with iter
+    {
+        cave::Vector<int> vecErase = {1, 2, 3, 4};
+        auto it = vecErase.begin();
+        it++;
+        vecErase.erase(it);
+        assert(vecErase.size() == 3);
+        assert(vecErase[0] == 1);
+        assert(vecErase[1] == 3);
+        assert(vecErase[2] == 4);
+    }
+
     // test emplace_back
     vec.emplaceBack(5);
     assert(vec.size() == 3);
@@ -131,6 +158,51 @@ void testCaveVector() {
             assert(vecInit[i] == i + 1);
         }
         assert(vecInit.back() == 5);
+    }
+
+    // Test assignment operator
+    {
+         // Test empty vectors
+        {
+            cave::Vector<int> v1;
+            cave::Vector<int> v2;
+            v2 = v1;
+            assert(v1 == v2);
+        }
+
+        // Test non-empty vectors
+        {
+            cave::Vector<int> v1 = {1, 2, 3};
+            cave::Vector<int> v2 = {4, 5, 6};
+            v2 = v1;
+            assert(v1 == v2);
+        }
+
+        // Test self-assignment
+        {
+            cave::Vector<int> v1 = {1, 2, 3};
+            v1 = v1;
+            cave::Vector<int> cmp = {1, 2, 3};
+            assert(v1 == cmp);
+        }
+
+        // Test assignment to smaller vector
+        {
+            cave::Vector<int> v1 = {1, 2, 3};
+            cave::Vector<int> v2 = {1, 2};
+            v2 = v1;
+            cave::Vector<int> cmp = {1, 2, 3};
+            assert(v2 == cmp);
+        }
+
+        // Test assignment to larger vector
+        {
+            cave::Vector<int> v1 = {1, 2, 3};
+            cave::Vector<int> v2 = {1, 2, 3, 4};
+            v2 = v1;
+            cave::Vector<int> cmp = {1, 2, 3};
+            assert(v2 == cmp);
+        }
     }
 
     std::cout << "[VECTOR] All tests passed!" << std::endl;

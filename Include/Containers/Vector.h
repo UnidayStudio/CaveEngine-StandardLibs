@@ -4,6 +4,7 @@
 #include <cstddef> // size_t
 #include <utility> // std::move, std::forward
 #include <cstdlib> // malloc, free
+#include <cstddef> // std::ptrdiff_t
 #include <initializer_list>
 
 #include "Containers/Exception.h"
@@ -45,9 +46,40 @@ namespace cave {
             }
         }
 
+        bool operator==(const Vector<T>& other) const {
+            if (size() != other.size()){
+                return false;
+            }
+            for (size_t i=0; i<size(); i++){
+                if (at(i) != other.at(i)){
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        bool operator!=(const Vector<T>& other) const {
+            return !(*this == other);
+        }
+
+        Vector<T>& operator=(const Vector<T> other){
+            clear();
+            fitNewSize(other.m_size);
+            
+            m_size = other.m_size;
+            for (size_t i=0; i<m_size; i++){
+                new(&m_data[i]) T(other.m_data[i]);
+            }
+            return *this;
+        }
+
         struct Iterator {
             Iterator(const Iterator& other) : m_ptr(other.m_ptr) {}
             Iterator(T* ptr) : m_ptr(ptr){}
+
+            T* getPointer() const {
+                return m_ptr;
+            }
 
             T& operator*() {
                 return *m_ptr;
@@ -199,6 +231,11 @@ namespace cave {
         inline void emplace_back(Args&&... args) { emplaceBack(std::forward<Args>(args)...); }
         inline void pop_back() { popBack(); }
         inline void shrink_to_fit() { shringToFit(); }
+
+        void erase(const Iterator& iter){
+            std::ptrdiff_t index = iter.getPointer() - &m_data[0];
+            erase(size_t(index));
+        }
 
         void erase(size_t pos){
             m_data[pos].~T();
