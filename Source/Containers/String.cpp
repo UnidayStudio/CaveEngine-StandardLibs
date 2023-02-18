@@ -160,18 +160,6 @@ cave::String cave::String::operator+(const cave::String& other) {
     return out;
 }
 
-cave::String operator+(const char* lStr, const cave::String& rStr) {
-    return cave::String(lStr) + rStr;
-}
-
-cave::String operator+(const cave::String& lStr, const char* rStr) {
-    return cave::String(lStr) + cave::String(rStr);
-}
-
-cave::String operator+(const cave::String& lStr, cave::String& rStr) {
-    return cave::String(lStr) + cave::String(rStr);
-}
-
 char cave::String::operator[](size_t pos) const {
     return m_data[pos];
 }
@@ -180,7 +168,10 @@ char& cave::String::operator[](size_t pos) {
 }
 
 const char* cave::String::c_str() const {
-    return m_data;
+    if (m_data){
+        return m_data;
+    }
+    return "\0";
 }
 const char* cave::String::data() const {
     return m_data;
@@ -214,13 +205,23 @@ void cave::String::clear() {
 }
 
 void cave::String::assign(const char* str) {
-    m_size = strlen(str);
-    reserve(m_size);
-    memcpy(m_data, str, m_size * sizeof(char));
-    m_data[m_size] = '\0';
+    if (str){
+        m_size = strlen(str);
+        reserve(m_size);
+        memcpy(m_data, str, m_size * sizeof(char));
+        m_data[m_size] = '\0';
+    }
+    else {
+        assign("");
+    }
 }
 void cave::String::assign(const cave::String& other) {
-    assign(other.m_data);
+    if (other.m_size == 0){
+        assign("");
+    }
+    else {
+        assign(other.m_data);
+    }
 }
 
 void cave::String::append(const char str) {
@@ -230,11 +231,13 @@ void cave::String::append(const char str) {
 }
 
 void cave::String::append(const char* str) {
-    const size_t newSize = m_size + strlen(str);
-    reserve(newSize);
-    memcpy((void*)(m_data + m_size), str, (newSize - m_size) * sizeof(char));
-    m_size = newSize;
-    m_data[m_size] = '\0';
+    if (str){
+        const size_t newSize = m_size + strlen(str);
+        reserve(newSize);
+        memcpy((void*)(m_data + m_size), str, (newSize - m_size) * sizeof(char));
+        m_size = newSize;
+        m_data[m_size] = '\0';
+    }
 }
 void cave::String::append(const cave::String& other) {
     append(other.m_data);

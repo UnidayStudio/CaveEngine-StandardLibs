@@ -69,9 +69,15 @@ namespace cave {
         String operator+(const char* str);
         String operator+(const String& other);
 
-        friend String operator+(const char* lStr, const String& rStr);
-        friend String operator+(const String& lStr, const char* rStr);
-        friend String operator+(const String& lStr, const String& rStr);
+        friend String operator+(const char* lStr, const String& rStr) {
+            return cave::String(lStr) + rStr;
+        }
+        friend String operator+(const String& lStr, const char* rStr){
+            return cave::String(lStr) + cave::String(rStr);
+        }
+        friend String operator+(const String& lStr, const String& rStr){
+            return cave::String(lStr) + cave::String(rStr);
+        }
 
         char operator[](size_t pos) const;
         char& operator[](size_t pos);
@@ -108,7 +114,7 @@ namespace cave {
         size_t rfind(const char* str, size_t pos = npos) const;
         size_t rfind(const String& other, size_t pos = npos) const;
 
-        String substr(size_t pos, size_t count) const;
+        String substr(size_t pos, size_t count = npos) const;
 
         String& replace(size_t pos, size_t len, const char* str);
         String& replace(size_t pos, size_t len, const String& str);
