@@ -49,7 +49,7 @@ void testCaveVector() {
     }
 
     // Test find
-    assert(vec.find(2) == 1);
+    assert(vec.findID(2) == 1);
 
     // Test front and back
     assert(vec.front() == 1);
@@ -233,6 +233,40 @@ void testCaveVector() {
 
         for (int i=0; i<6; i++){
             assert(v2[i] == 5 - i);
+        }
+    }
+
+    // Test find
+    {
+        cave::Vector<int> v1 = {4, 5, 1, 3, 2, 0};
+
+        auto it1 = v1.find(4);
+        assert(*it1 == 4);
+        assert(it1 == v1.begin());
+
+        auto it2 = v1.find(0);
+        assert(*it2 == 0);
+        assert(it2 == v1.end() - 1);
+
+        auto it3 = v1.find(1337);
+        assert(it3 == v1.end());
+
+        auto it4 = v1.find(1);
+        assert(*it4 == 1);
+    }
+
+    // Test append
+    {
+        cave::Vector<int> v1 = {0, 1, 2};
+        cave::Vector<int> v2 = {3, 4, 5};
+
+        v1.append(v2);
+
+        assert(v1.size() == 6);
+        assert(v2.size() == 3);
+
+        for (int i=0; i< 6; i++){
+            assert(v1[i] == i);
         }
     }
 

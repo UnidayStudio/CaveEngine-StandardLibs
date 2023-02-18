@@ -82,6 +82,10 @@ void testCaveString() {
     // Test c_str() method
     assert(strcmp(s6.c_str(), "hello hello worldhello hello") == 0);
 
+    // Test c_str() method when the string is empty!
+    cave::String emptyStr;
+    assert(strcmp(emptyStr.c_str(), "") == 0);
+
     // Test data() method
     assert(s6.data()[5] == ' ');
 
