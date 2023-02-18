@@ -267,12 +267,21 @@ namespace cave {
             }
         }
 
+        void append(const Vector& other){
+            reserve(size() + other.size());
+			for (auto asset : other) {
+				pushBack(asset);
+			}
+        }
+
         void insert(size_t pos, const T& value){
             fitNewSize(m_size + 1);
 
-            for (size_t i = m_size-1; i >= pos; i--){
-                new(&m_data[i + 1]) T(std::move(m_data[i]));
-                //m_data[i + 1] = std::move(m_data[i]);
+            if (m_size > 0 && pos < m_size){
+                for (size_t i = m_size-1; i >= pos; i--){
+                    new(&m_data[i + 1]) T(std::move(m_data[i]));
+                    //m_data[i + 1] = std::move(m_data[i]);
+                }
             }
             new(&m_data[pos]) T(value);
             m_size++;
@@ -289,13 +298,23 @@ namespace cave {
             m_size++;
         }
 
-        size_t find(const T& object) const {
+        size_t findID(const T& object) const {
             for (size_t i=0; i<m_size; i++){
                 if (m_data[i] == object){
                     return i;
                 }
             }
             return npos;
+        }
+
+        Iterator find(const T& element) const {
+            const auto endIt = end();
+            for (auto it=begin(); it != endIt; it++){
+                if (*it == element){
+                    return it;
+                }
+            }
+            return end();
         }
 
         void sort(){
