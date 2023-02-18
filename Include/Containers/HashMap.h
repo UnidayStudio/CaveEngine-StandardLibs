@@ -54,9 +54,11 @@ namespace cave {
             }
 
             bool operator==(const Container& other) const {
-                return value == other.value;
+                // I'll only compare the container key and not its value, assuming that
+                // the HashMap can't have multiple elements with the same key.
+                return value.first == other.value.first;
             }
-
+            
             bool operator!=(const Container& other) const {
                 return !(*this == other);
             }
