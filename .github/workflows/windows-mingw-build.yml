@@ -1,0 +1,28 @@
+name: windows-mingw-build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: msys2/setup-msys2@v2
+        with:
+          install: gcc make
+
+      - name: compile tests
+        shell: msys2 {0}
+        run: |
+          mkdir Bin
+          make
+
+      - name: run tests
+        shell: msys2 {0}
+        run: |
+          Bin/Tests.exe
